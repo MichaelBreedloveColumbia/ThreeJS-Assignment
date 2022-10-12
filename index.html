@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three JS Assignment</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <script type="module">
+        import * as THREE from './js/three.module.js';
+        
+        var scene = new THREE.Scene();
+
+        var projCam = new THREE.PerspectiveCamera(50,window.innerWidth/window.innerHeight,0.1,1000);
+        projCam.position.z = 8;
+        projCam.updateProjectionMatrix();
+
+        var renderer = new THREE.WebGLRenderer({antialias:true});
+        renderer.setClearColor("#e5e5e5");
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        window.addEventListener('resize',() => {
+            renderer.setSize(width,height);
+            camera.aspect = width/height;
+            camera.updateProjectionMatrix();
+        })
+
+        var cameraPosition = 2;
+        var cameraSpeed = 0.1;
+
+        var light = new THREE.PointLight(0xFFFFFF,1,500);
+        light.position.set(10,0,25);
+        scene.add(light);
+        var geometry_cube = new THREE.BoxGeometry(2,2,2);
+        var material = new THREE.MeshLambertMaterial({color: 0xFFCC00});
+        var cube = new THREE.Mesh(geometry_cube,material);
+
+        var geometry_sphere = new THREE.SphereGeometry(1, 15, 15);
+        var material_sphere = new THREE.MeshBasicMaterial( { color: 0xFFCC00 } );
+        var sphere = new THREE.Mesh(geometry_sphere, material_sphere);
+        sphere.position.x = 4;
+
+        var geometry_cone = new THREE.ConeGeometry( 1, 8, 15 );
+        var material = new THREE.MeshBasicMaterial( {color: 0xFFCC00} );
+        var cone = new THREE.Mesh( geometry_cone, material );
+        cone.position.x = -4;
+
+        var shape_diamond = new THREE.Shape();
+        shape_diamond.moveTo(0, 0);
+        shape_diamond.bezierCurveTo( 1, 0, -1, 0, 0, 0 );
+        shape_diamond.bezierCurveTo( -1, 0, 1, 0, 0, 0 );
+        shape_diamond.bezierCurveTo( 1, 0, 1, 0, 0, 0 );
+        shape_diamond.bezierCurveTo( -1, 0, -1, 0, 0, 0 );
+        shape_diamond.bezierCurveTo( 0, 1, 0, 0, 0, 0 );
+        shape_diamond.bezierCurveTo( 0, -1, 0, 0, 0, 0 );
+
+        var extrudeSettings = { depth: 1, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
+
+        var geometry_diamond = new THREE.ExtrudeGeometry( shape_diamond, extrudeSettings );
+        var diamond = new THREE.Mesh(geometry_diamond, material);
+        diamond.position.y = 2;
+
+        scene.add(cube);
+        scene.add(sphere);
+        scene.add(cone);
+        scene.add(diamond);
+
+        renderer.render(scene, projCam);
+
+        function animate() {
+        requestAnimationFrame( animate );
+        cube.rotation.y += 0.05;
+        cone.rotation.x += 0.05;
+        diamond.rotation.y += 0.1;
+        cameraPosition += cameraSpeed;
+        if (cameraPosition > 2 || cameraPosition < -2)
+        {
+            cameraSpeed *= -1;
+        }
+
+        projCam.position.y = cameraPosition;
+        renderer.render( scene, projCam );
+    }
+    animate();
+        </script>
+</body>
+</html>
